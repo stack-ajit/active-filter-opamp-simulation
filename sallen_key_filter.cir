@@ -1,0 +1,31 @@
+* Sallen-Key 2nd-Order Low-Pass Filter SPICE Netlist
+* Designed for fc = 10 kHz, Butterworth Q = 0.707
+* Op-Amp: Single-Pole Operational Amplifier Subcircuit Model
+
+VIN 1 0 AC 1.0 PULSE(0 1.0 10u 1n 1n 50u 100u)
+R1 1 2 10k
+R2 2 3 10k
+C1 2 4 2.25n
+C2 3 0 1.13n
+
+* Ideal / Non-Ideal Op-Amp Voltage Follower Subcircuit
+* Connections: Non-Inverting Inverting Output
+XOP 3 4 4 OPAMP_MODEL
+
+* Simple Op-Amp Model with Open-Loop DC Gain = 100k, GBW = 10 MHz
+.SUBCKT OPAMP_MODEL INP INM OUT
+RIN INP INM 10MEG
+E1 INT 0 INP INM 100K
+RO INT 0 100K
+CO INT 0 1.5915n ; Dominant pole at 1 Hz -> GBW = 100k * 100 Hz = 10 MHz
+EOUT OUT 0 INT 0 1.0
+.ENDS
+
+* AC Analysis: 100 Hz to 1 MHz
+.AC DEC 100 100 1MEG
+
+* Transient Analysis: 0 to 200us
+.TRAN 0.1u 200u 0 0.1u
+
+.PROBE
+.END
